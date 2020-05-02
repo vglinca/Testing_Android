@@ -1,11 +1,5 @@
 package com.example.testinglab6;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
@@ -20,17 +14,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
-public class ClickMenuTest {
+public class AppTests {
 
   private UiDevice mUiDevice;
-  private static final String BASIC_SAMPLE_PACKAGE
-          = "com.example.android.testing.uiautomator.BasicSample";
 
   @Before
   public void setup(){
@@ -50,10 +42,11 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Translate"));
-
 
     UiObject translate = mUiDevice.findObject(new UiSelector().textContains("Translate"));
+    while (!translate.exists()){
+      appViews.scrollForward();
+    }
     translate.clickAndWaitForNewWindow();
 
     UiObject clearButton = mUiDevice.findObject(new UiSelector().resourceId("com.google.android.apps.translate:id/btn_clear_input"));
@@ -69,6 +62,7 @@ public class ClickMenuTest {
     editTxt.setText("I am a king");
     mUiDevice.pressEnter();
     mUiDevice.pressHome();
+    //closeAll();
   }
 
   @Test
@@ -78,9 +72,11 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Keep notes"));
 
     UiObject keep = mUiDevice.findObject(new UiSelector().textContains("Keep notes"));
+    while (!keep.exists()){
+      appViews.scrollForward();
+    }
     keep.clickAndWaitForNewWindow(3000);
 
     UiObject newNote = mUiDevice.findObject(new UiSelector().resourceId("com.google.android.keep:id/new_note_button"));
@@ -98,18 +94,21 @@ public class ClickMenuTest {
     navigateUp.waitForExists(5000);
     navigateUp.clickAndWaitForNewWindow(5000);
     mUiDevice.pressHome();
+    //closeAll();
   }
 
   @Test
-  public void RecordVideo() throws UiObjectNotFoundException{
+  public void RecordVideo() throws UiObjectNotFoundException, InterruptedException {
     mUiDevice.pressHome();
     UiObject allApps = mUiDevice.findObject(new UiSelector().resourceId("launcher.mi.launcher:id/all_apps_handle"));
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Camera"));
 
     UiObject camera = mUiDevice.findObject(new UiSelector().textContains("Camera"));
+    while (!camera.exists()){
+      appViews.scrollForward();
+    }
     camera.clickAndWaitForNewWindow(3000);
 
     UiObject video = mUiDevice.findObject(new UiSelector().textContains("Video"));
@@ -121,24 +120,26 @@ public class ClickMenuTest {
     recordBtn.waitForExists(5000);
     recordBtn.click();
 
-    for (int i = 0; i < 10000000; i++);
+    TimeUnit.SECONDS.sleep(5);
 
     recordBtn.click();
 
     mUiDevice.pressHome();
+    //closeAll();
   }
 
   @Test
-  public void OpenYouTube() throws UiObjectNotFoundException{
+  public void OpenYouTube() throws UiObjectNotFoundException, InterruptedException {
     mUiDevice.pressHome();
     UiObject allApps = mUiDevice.findObject(new UiSelector().resourceId("launcher.mi.launcher:id/all_apps_handle"));
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("YouTube"));
 
     UiObject youtube = mUiDevice.findObject(new UiSelector().textContains("YouTube"));
-    youtube.waitForExists(5000);
+    while (!youtube.exists()){
+      appViews.scrollForward();
+    }
     youtube.clickAndWaitForNewWindow(3000);
 
     UiObject searchClear = mUiDevice.findObject(new UiSelector().resourceId("com.google.android.youtube:id/search_clear"));
@@ -148,6 +149,9 @@ public class ClickMenuTest {
       videoSearchEditTxt.waitForExists(5000);
       videoSearchEditTxt.setText("mats valk 5.55");
       mUiDevice.pressEnter();
+
+      findAndPlayVideo();
+
     }else{
       UiObject searchVideo = mUiDevice.findObject(new UiSelector().descriptionContains("Search"));
       searchVideo.waitForExists(5000);
@@ -156,8 +160,24 @@ public class ClickMenuTest {
       videoSearchEditTxt.waitForExists(5000);
       videoSearchEditTxt.setText("mats valk 5.55");
       mUiDevice.pressEnter();
+
+      findAndPlayVideo();
     }
 
+    mUiDevice.pressHome();
+    //closeAll();
+  }
+
+  private void findAndPlayVideo() throws UiObjectNotFoundException, InterruptedException {
+    UiScrollable scroll = new UiScrollable(new UiSelector().scrollable(true));
+    scroll.scrollIntoView(new UiSelector().descriptionContains("Mats Valk (former) Official"));
+
+    UiObject video = mUiDevice.findObject(new UiSelector().descriptionContains("Mats Valk (former) Official"));
+    video.clickAndWaitForNewWindow();
+    TimeUnit.SECONDS.sleep(27);
+
+    UiObject likeBtn = mUiDevice.findObject(new UiSelector().resourceId("com.google.android.youtube:id/like_button"));
+    likeBtn.click();
     mUiDevice.pressHome();
 
   }
@@ -169,9 +189,11 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Pi Music Player"));
-
     UiObject player = mUiDevice.findObject(new UiSelector().textContains("Pi Music Player"));
+    while (!player.exists()){
+      appViews.scrollForward();
+    }
+
     player.waitForExists(5000);
     player.clickAndWaitForNewWindow(3000);
 
@@ -182,25 +204,21 @@ public class ClickMenuTest {
     UiObject playPauseBtn = mUiDevice.findObject(new UiSelector().resourceId("com.Project100Pi.themusicplayer:id/playPauseView"));
     playPauseBtn.waitForExists(5000);
     playPauseBtn.click();
-
-    for (int i = 0; i < 1000000; i++){
-      delay();
-    }
+    TimeUnit.SECONDS.sleep(5);
 
     UiObject nextSongBtn = mUiDevice.findObject(new UiSelector().resourceId("com.Project100Pi.themusicplayer:id/nextImage"));
     nextSongBtn.waitForExists(5000);
     for (int i = 0; i < 3; i++){
       nextSongBtn.click();
       TimeUnit.SECONDS.sleep(5);
-      for (int j = 0; j < 1000000; j++){
-        delay();
-      }
     }
 
     playPauseBtn.click();
     mUiDevice.pressHome();
+    //closeAll();
 
   }
+
 
   @Test
   public void NavigateToUniversity() throws UiObjectNotFoundException, InterruptedException {
@@ -209,11 +227,13 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Maps"));
+    UiObject maps = mUiDevice.findObject(new UiSelector().textContains("Maps"));
 
-    UiObject player = mUiDevice.findObject(new UiSelector().textContains("Maps"));
-    player.waitForExists(5000);
-    player.clickAndWaitForNewWindow(3000);
+    while (!maps.exists()){
+      appViews.scrollForward();
+    }
+
+    maps.clickAndWaitForNewWindow(3000);
 
     UiObject searchField = mUiDevice.findObject(new UiSelector().resourceId("com.google.android.apps.maps:id/search_omnibox_text_box"));
     searchField.waitForExists(3000);
@@ -225,6 +245,7 @@ public class ClickMenuTest {
     mUiDevice.pressEnter();
     TimeUnit.SECONDS.sleep(5);
     mUiDevice.pressHome();
+    //closeAll();
   }
 
   @Test
@@ -234,11 +255,12 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Play Store"));
 
-    UiObject player = mUiDevice.findObject(new UiSelector().textContains("Play Store"));
-    player.waitForExists(5000);
-    player.clickAndWaitForNewWindow(3000);
+    UiObject app = mUiDevice.findObject(new UiSelector().textContains("Play Store"));
+    while (!app.exists()){
+      appViews.scrollForward();
+    }
+    app.clickAndWaitForNewWindow(3000);
 
     UiObject searchBar = mUiDevice.findObject(new UiSelector().resourceId("com.android.vending:id/search_bar_hint"));
     searchBar.waitForExists(3000);
@@ -253,6 +275,7 @@ public class ClickMenuTest {
     installBtn.waitForExists(3000);
     installBtn.click();
     mUiDevice.pressHome();
+    //closeAll();
   }
 
   @Test
@@ -262,10 +285,11 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Chrome"));
 
     UiObject chrome = mUiDevice.findObject(new UiSelector().textContains("Chrome"));
-    chrome.waitForExists(5000);
+    while (!chrome.exists()){
+      appViews.scrollForward();
+    }
     chrome.clickAndWaitForNewWindow(3000);
 
     UiObject urlBar = mUiDevice.findObject(new UiSelector().resourceId("com.android.chrome:id/url_bar"));
@@ -276,6 +300,7 @@ public class ClickMenuTest {
     mUiDevice.pressEnter();
     TimeUnit.SECONDS.sleep(3);
     mUiDevice.pressHome();
+    //closeAll();
   }
 
   @Test
@@ -285,10 +310,11 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Gmail"));
 
     UiObject gmail = mUiDevice.findObject(new UiSelector().textContains("Gmail"));
-    gmail.waitForExists(5000);
+    while (!gmail.exists()){
+      appViews.scrollForward();
+    }
     gmail.clickAndWaitForNewWindow(3000);
 
     UiObject addMsg = mUiDevice.findObject(new UiSelector().resourceId("com.google.android.gm:id/compose_button"));
@@ -313,6 +339,42 @@ public class ClickMenuTest {
     sendBtn.clickAndWaitForNewWindow();
 
     mUiDevice.pressHome();
+    //closeAll();
+  }
+
+  @Test
+  public void TinderSearch() throws UiObjectNotFoundException, InterruptedException {
+    mUiDevice.pressHome();
+    UiObject allApps = mUiDevice.findObject(new UiSelector().resourceId("launcher.mi.launcher:id/all_apps_handle"));
+    allApps.clickAndWaitForNewWindow();
+
+    UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
+
+    UiObject tinder = mUiDevice.findObject(new UiSelector().textContains("Tinder"));
+    while (!tinder.exists()){
+      appViews.scrollForward();
+    }
+    tinder.clickAndWaitForNewWindow();
+
+    UiObject like = mUiDevice.findObject(new UiSelector().resourceId("com.tinder:id/gamepad_like"));
+    UiObject dislike = mUiDevice.findObject(new UiSelector().resourceId("com.tinder:id/gamepad_pass"));
+
+
+    Random rnd = new Random();
+    ArrayList<Integer> numbers = new ArrayList<>();
+    for (int i = 0; i < 10; i++){
+      numbers.add(rnd.nextInt(10));
+    }
+    for(int n: numbers){
+      if(n < 5){
+        like.click();
+      }else{
+        dislike.click();
+      }
+      TimeUnit.SECONDS.sleep(3);
+    }
+    mUiDevice.pressHome();
+    //closeAll();
   }
 
   @Test
@@ -322,10 +384,11 @@ public class ClickMenuTest {
     allApps.clickAndWaitForNewWindow();
 
     UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-    appViews.scrollIntoView(new UiSelector().textContains("Fit"));
 
     UiObject fit = mUiDevice.findObject(new UiSelector().textContains("Fit"));
-    fit.waitForExists(5000);
+    while (!fit.exists()){
+      appViews.scrollForward();
+    }
     fit.clickAndWaitForNewWindow(3000);
 
     UiObject addFab = mUiDevice.findObject(new UiSelector().resourceId("com.google.android.apps.fitness:id/add_entry_fab"));
@@ -355,16 +418,14 @@ public class ClickMenuTest {
     saveBtn.clickAndWaitForNewWindow();
 
     mUiDevice.pressHome();
+    //closeAll();
+  }
 
+
+
+  private void closeAll() throws UiObjectNotFoundException {
     mUiDevice.pressMenu();
-
-    mUiDevice.pressHome();
-
+    UiObject closeAll = mUiDevice.findObject(new UiSelector().resourceId("com.android.systemui:id/clearAnimView"));
+    closeAll.click();
   }
-
-
-  private void delay(){
-    for (int i = 0; i < 1000000; i++);
-  }
-
 }
